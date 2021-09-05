@@ -1,7 +1,11 @@
+import os
+
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
+
+DATABASE_URL = os.environ['DATABASE_URL']
 
 class UserLinks(Base):
      __tablename__ = 'user_links'
@@ -15,7 +19,7 @@ class UserLinks(Base):
 
 class UserLinksDB:
     def __init__(self,):
-        engine = create_engine('sqlite:///user_links.sqlite?check_same_thread=False', echo=True)
+        engine = create_engine(DATABASE_URL, echo=True)
         Base.metadata.create_all(bind=engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
