@@ -1,5 +1,5 @@
-python-telegram-bot
-Pillow
-selenium
-validators
-sqlalchemy
+python-telegram-bot==13.7
+Pillow==6.0.0
+selenium==3.141.0
+validators==0.18.2
+SQLAlchemy==1.4.23
