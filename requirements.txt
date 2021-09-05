@@ -1,5 +1,5 @@
 python-telegram-bot
-PIL
+Pillow
 selenium
 validators
 sqlalchemy
