@@ -15,6 +15,7 @@ def get_stocks(item_links, need_ss=False):
     driver = get_driver(browser=BROWSER, headless=HEADLESS, verbose=VERBOSE, user_agent=USER_AGENT)
     res = []
     for item_link in item_links:
+        print(f'getting {item_link}')
         driver.get(item_link)
         name = driver.title
 
@@ -55,5 +56,6 @@ def get_stocks(item_links, need_ss=False):
             print(f'{e} error scraping for {name}')
 
         res.append(result)
+        driver.close()
 
     return res
