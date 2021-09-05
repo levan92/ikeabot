@@ -1,0 +1,5 @@
+python-telegram-bot
+PIL
+selenium
+validators
+sqlalchemy
