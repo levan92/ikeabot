@@ -58,4 +58,5 @@ def get_stocks(item_links, need_ss=False):
         res.append(result)
         driver.close()
 
+    driver.quit()
     return res
