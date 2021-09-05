@@ -25,10 +25,12 @@ class UserLinksDB:
         self.session = Session()
 
     def _add(self, chat_id, link):
+        chat_id = int(chat_id)
         user_link = UserLinks(chat_id=chat_id, link=link)
         self.session.add(user_link)
 
     def replace(self, chat_id, links):
+        chat_id = int(chat_id)
         rows = self.session.query(UserLinks).filter_by(chat_id=chat_id)
         rows.delete(synchronize_session=False)
         for link in links:
@@ -36,5 +38,6 @@ class UserLinksDB:
         self.session.commit()
 
     def get(self, chat_id):
+        chat_id = int(chat_id)
         links = self.session.query(UserLinks).filter_by(chat_id=chat_id).all() 
         return links
