@@ -11,7 +11,7 @@ class UserLinks(Base):
      __tablename__ = 'user_links'
 
      id = Column(Integer, primary_key=True)
-     chat_id = Column(String)
+     chat_id = Column(Integer)
      link = Column(String)
 
      def __repr__(self):
