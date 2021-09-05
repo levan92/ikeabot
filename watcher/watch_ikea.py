@@ -1,3 +1,5 @@
+import time
+
 from selenium.common.exceptions import StaleElementReferenceException
 
 from .utils import wait_load, get_driver, ss_elem
@@ -17,8 +19,8 @@ def get_stocks(item_links, need_ss=False):
     for item_link in item_links:
         print(f'getting {item_link}')
         driver.get(item_link)
+        time.sleep(0.5)
         name = driver.title
-
         result = [name]
         try:
             print(f'getting keyword for {name}..')
@@ -56,7 +58,6 @@ def get_stocks(item_links, need_ss=False):
             print(f'{e} error scraping for {name}')
 
         res.append(result)
-        driver.close()
 
     driver.quit()
     return res
