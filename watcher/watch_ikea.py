@@ -11,7 +11,7 @@ VERBOSE = True
 ITEM_LINK = 'https://www.ikea.com/sg/en/p/havsen-sink-bowl-w-visible-front-white-s69253716/'
 # USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36"
 USER_AGENT=None
-WAIT=5
+WAIT=3
 
 def get_init_driver():
     return get_driver(browser=BROWSER, headless=HEADLESS, verbose=VERBOSE, user_agent=USER_AGENT)
@@ -22,7 +22,7 @@ def get_stocks(item_links, need_ss=False):
     for item_link in item_links:
         print(f'getting {item_link}')
         driver.get(item_link)
-        # time.sleep(5)
+        time.sleep(WAIT)
         # WebDriverWait(driver, WAIT).until(lambda x: driver.title)
 
         name = driver.title
