@@ -13,11 +13,12 @@ ITEM_LINK = 'https://www.ikea.com/sg/en/p/havsen-sink-bowl-w-visible-front-white
 USER_AGENT=None
 WAIT=3
 
+driver = get_driver(browser=BROWSER, headless=HEADLESS, verbose=VERBOSE, user_agent=USER_AGENT)
+
 def get_init_driver():
     return get_driver(browser=BROWSER, headless=HEADLESS, verbose=VERBOSE, user_agent=USER_AGENT)
 
 def get_stocks(item_links, need_ss=False):
-    driver = get_driver(browser=BROWSER, headless=HEADLESS, verbose=VERBOSE, user_agent=USER_AGENT)
     res = []
     for item_link in item_links:
         print(f'getting {item_link}')
@@ -64,5 +65,5 @@ def get_stocks(item_links, need_ss=False):
 
         res.append(result)
 
-    driver.quit()
+    # driver.quit()
     return res
