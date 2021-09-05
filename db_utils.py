@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
 
-DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ['DATABASE_URL'].replace('postgres://', 'postgresql://')
 
 class UserLinks(Base):
      __tablename__ = 'user_links'
