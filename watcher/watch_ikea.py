@@ -22,8 +22,8 @@ def get_stocks(item_links, need_ss=False):
     for item_link in item_links:
         print(f'getting {item_link}')
         driver.get(item_link)
-
-        WebDriverWait(driver, WAIT).until(lambda x: driver.title)
+        # time.sleep(5)
+        # WebDriverWait(driver, WAIT).until(lambda x: driver.title)
 
         name = driver.title
         result = [name]
