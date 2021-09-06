@@ -5,10 +5,10 @@ import validators
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 
-from watcher.watch_ikea import get_stocks
-from db_utils import UserLinksDB
-from msgs import help_msg
-from emojis import EMO
+from utils.watcher import get_stock
+from utils.db_utils import UserLinksDB
+from utils.msgs import help_msg
+from utils.emojis import EMO
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -123,15 +123,9 @@ def report_stock(update, context):
 
     if links:
         update.message.reply_text('Hold on, checking with IKEA..')
-
-        results = get_stocks(links, need_ss=False)
-        for i, result_link in enumerate(zip(results, links)):
-            result, link = result_link
-            # name, success, ss = result
+        for i, link in enumerate(links):
+            name, success = get_stock(links)
             name, success = result
-            name = name.replace('- IKEA','')
-            # if ss:
-            #     context.bot.send_photo(chat_id, ss)
             if success is None:
                 msg = f'{i+1}) {name}: {EMO["warn"]} Unable to get info, sorry check yourself {link}'
             elif success:
@@ -141,7 +135,6 @@ def report_stock(update, context):
             update.message.reply_text(msg, disable_web_page_preview=True)
     else:
         update.message.reply_text('You have nothing on the list, please /add to it!')
-
 
 def error(update, context):
     """Log Errors caused by Updates."""
