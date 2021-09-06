@@ -111,8 +111,9 @@ def end_edit_links(update, context):
     chat_id = update.message.chat.id
     links = context.user_data.get('links')
     to_removes = context.user_data.get('to_removes', [])
-    for select in to_removes:
-        links.remove(select)
+    for select in set(to_removes):
+        if select in links:
+            links.remove(select)
     if links:
         update.message.reply_text(f"Will look out for these:")
         for i, link in enumerate(links):
