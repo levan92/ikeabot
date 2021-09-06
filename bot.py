@@ -16,7 +16,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-ADDING_LINKS = range(1)
+ADDING_LINKS, REMOVING_LINKS = range(2)
 
 user_links_db = UserLinksDB()
 
@@ -43,43 +43,16 @@ def view_links(update, context):
     else:
         update.message.reply_text("Nothing to look out for. Please /add.")
 
-def remove_links(update, context):
-    ''' Remove given index of link '''
-    chat_id = update.message.chat.id
-    links = user_links_db.get(chat_id)
-    links = [ l.link for l in links ]
-    context.user_data['links'] = links
-
-    to_removes = []
-    for num in context.args:
-        selected = None
-        try:
-            ind = int(num) - 1
-            if ind <= len(links):
-                selected = links[ind] 
-        except Exception as e:
-            # gave a string/url
-            if num in links:
-                selected = num
-        if selected:
-            to_removes.append(selected)
-    
-    for select in to_removes:
-        links.remove(select)
-        update.message.reply_text(f"Removed {select}")
-
-    user_links_db.replace(chat_id, links)
-    view_links(update, context)
-
 def start_add_links(update, context):
     '''Start convo to add ikea links'''
-    msg = 'Please give me links to watch out for, and send /done to stop adding links'
-    logger.info(msg)
-    update.message.reply_text(msg)
+    update.message.reply_text('Please give me links to add to the watchlist, and send /done to stop adding links')
+    update.message.reply_text('Currently we have:')
     chat_id = update.message.chat.id
     try:
         links = user_links_db.get(chat_id)
         context.user_data['links'] = [ l.link for l in links ]
+        for i, link in enumerate(links):
+            update.message.reply_text(f"{i+1}) {link}")
     except Exception as e:
         context.user_data['links'] = []
     return ADDING_LINKS
@@ -95,17 +68,53 @@ def add_link(update, context):
         else:
             msg = f'Invalid link format: {link}'
             logger.warn(msg)
-            update.message.reply_text
     context.user_data['links'].extend(links)
     context.user_data['links'] = list(set(context.user_data['links']))
     update.message.reply_text(f"go on.. let me know when you are /done.")
     return ADDING_LINKS
 
-def end_add_links(update, context):
+def start_remove_links(update, context):
+    '''Start convo to remove ikea links'''
+    msg = 'Here are the current links, please let me know which to remove, and send /done to stop removing links'
+    logger.info(msg)
+    update.message.reply_text(msg)
+    chat_id = update.message.chat.id
+    links = [l.links for l in user_links_db.get(chat_id)]
+    for i, link in enumerate(links):
+        update.message.reply_text(f"{i+1}) {link}")
+    context.user_data['links'] = links
+    context.user_data['to_removes'] = []
+    return REMOVING_LINKS
+
+def remove_link(update, context):
+    '''Remove ikea link'''
+    links = context.user_data['links']
+    to_removes = context.user_data['to_removes']
+    for text in update.message.text.split():
+        text = text.strip()
+        selected = None
+        try:
+            ind = int(text) - 1
+            if ind <= len(links):
+                selected = links[ind]
+        except Exception as e:
+            # gave a string/url
+            if text in links:
+                selected = text
+        if selected:
+            to_removes.append(selected)
+            update.message.reply_text(f'Removing {selected}.')
+    update.message.reply_text(f"go on.. let me know when you are /done.")
+    return REMOVING_LINKS
+
+def end_edit_links(update, context):
     chat_id = update.message.chat.id
     links = context.user_data.get('links')
+    to_removes = context.user_data.get('to_removes', [])
+    for select in to_removes:
+        links.remove(select)
     if links:
-        update.message.reply_text(f"Got it, will look out for these:")
+        update.message.reply_text(f"Will look out for these:")
         for i, link in enumerate(links):
             update.message.reply_text(f"{i+1}) {link}")
         logger.info(links)
@@ -154,13 +163,13 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("stock", report_stock))
     dp.add_handler(CommandHandler("list", view_links))
-    dp.add_handler(CommandHandler("remove", remove_links))
     dp.add_handler(CommandHandler("help", help))
 
     convo_handler = ConversationHandler(
-        entry_points=[CommandHandler('add', start_add_links), CommandHandler('add', start_add_links)],
+        entry_points=[CommandHandler('add', start_add_links), CommandHandler('remove', start_remove_links)],
         states={
-            ADDING_LINKS: [CommandHandler('done', end_add_links), MessageHandler(Filters.text, add_link)],
+            ADDING_LINKS: [CommandHandler('done', end_edit_links), MessageHandler(Filters.text, add_link)],
+            REMOVING_LINKS: [CommandHandler('done', end_edit_links), MessageHandler(Filters.text, remove_link)]
         },
         fallbacks=[],
     )
