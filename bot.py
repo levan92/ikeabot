@@ -49,8 +49,8 @@ def start_add_links(update, context):
     update.message.reply_text('Currently we have:')
     chat_id = update.message.chat.id
     try:
-        links = user_links_db.get(chat_id)
-        context.user_data['links'] = [ l.link for l in links ]
+        links = [ l.link for l in user_links_db.get(chat_id) ]
+        context.user_data['links'] = links
         for i, link in enumerate(links):
             update.message.reply_text(f"{i+1}) {link}")
     except Exception as e:
@@ -115,7 +115,7 @@ def end_edit_links(update, context):
         if select in links:
             links.remove(select)
     if links:
-        update.message.reply_text(f"Will look out for these:")
+        update.message.reply_text(f"Will look out for these now:")
         for i, link in enumerate(links):
             update.message.reply_text(f"{i+1}) {link}")
         logger.info(links)
