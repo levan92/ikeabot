@@ -124,8 +124,7 @@ def report_stock(update, context):
     if links:
         update.message.reply_text('Hold on, checking with IKEA..')
         for i, link in enumerate(links):
-            name, success = get_stock(links)
-            name, success = result
+            name, success = get_stock(link)
             if success is None:
                 msg = f'{i+1}) {name}: {EMO["warn"]} Unable to get info, sorry check yourself {link}'
             elif success:
