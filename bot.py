@@ -39,7 +39,7 @@ def view_links(update, context):
         for i, l in enumerate(links):
             update.message.reply_text(f"{i+1}) {l.link}")
         update.message.reply_text(f"/stock to perform a stock take on your list {EMO['smile']}")
-        update.message.reply_text(f"/remove [no. or link] to remove from list")
+        update.message.reply_text(f"/add or /remove to edit list")
     else:
         update.message.reply_text("Nothing to look out for. Please /add.")
 
@@ -75,11 +75,11 @@ def add_link(update, context):
 
 def start_remove_links(update, context):
     '''Start convo to remove ikea links'''
-    msg = 'Here are the current links, please let me know which to remove, and send /done to stop removing links'
+    msg = 'Here are the current links, please let me know which to remove (you can give me either the number or the actual link), and send /done to stop removing links'
     logger.info(msg)
     update.message.reply_text(msg)
     chat_id = update.message.chat.id
-    links = [l.links for l in user_links_db.get(chat_id)]
+    links = [l.link for l in user_links_db.get(chat_id)]
     for i, link in enumerate(links):
         update.message.reply_text(f"{i+1}) {link}")
     context.user_data['links'] = links
@@ -143,6 +143,9 @@ def report_stock(update, context):
             update.message.reply_text(msg, disable_web_page_preview=True)
     else:
         update.message.reply_text('You have nothing on the list, please /add to it!')
+
+def clear(update, context):
+    '''Clear everything from list and db'''
 
 def error(update, context):
     """Log Errors caused by Updates."""
