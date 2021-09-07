@@ -138,9 +138,9 @@ def report_stock(update, context):
             if success is None:
                 msg = f'{i+1}) {name}: {EMO["warn"]} Unable to get info, sorry check yourself {link}'
             elif success:
-                msg = f'{i+1}) {name}: {EMO["tick"]} GOT STOCK, GO GET IT GIRL {link}'
+                msg = f'{i+1}) {name}: {EMO["tick"]} Available! Get it here: {link}'
             else:
-                msg = f'{i+1}) {name}: {EMO["cross"]} out of stock :('
+                msg = f'{i+1}) {name}: {EMO["cross"]} Nuu out of stock :('
             update.message.reply_text(msg, disable_web_page_preview=True)
     else:
         update.message.reply_text('You have nothing on the list, please /add to it!')
