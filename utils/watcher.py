@@ -6,13 +6,16 @@ def get_stock(page):
     soup = BeautifulSoup(page.content, 'html.parser')
     name = soup.title.text.split('- IKEA')[0].strip()
 
-    stockcheck = soup.find("div", class_="range-revamp-stockcheck__item")
-    indicator = stockcheck.find("span", class_="range-revamp-indicator")
+    stockchecks = soup.find_all("div", class_="range-revamp-stockcheck__item")
 
-    if indicator.has_attr('class'):
-        success = indicator['class'][-1].split('--')[-1] == 'success'
+    for stockcheck in stockchecks:
+        indicator = stockcheck.find("span", class_="range-revamp-indicator")
+        if indicator:
+            if indicator.has_attr('class'):
+                success = indicator['class'][-1].split('--')[-1] == 'success'
+                break
     else:
-        success = None
+        success = None 
 
     if success is None:
         print(f'{name} unknown stock')
