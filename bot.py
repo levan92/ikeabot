@@ -62,6 +62,8 @@ def start_add_links(update, context):
 
 def add_link(update, context):
     '''Add ikea link'''
+    logger.info('Adding Link')
+    logger.info(update.message.text)
     links = []
     for link in update.message.text.split('\n'):
         link = link.strip()
