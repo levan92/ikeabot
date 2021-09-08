@@ -46,13 +46,16 @@ def view_links(update, context):
 def start_add_links(update, context):
     '''Start convo to add ikea links'''
     update.message.reply_text('Please give me links to add to the watchlist, and send /done to stop adding links')
-    update.message.reply_text('Currently we have:')
     chat_id = update.message.chat.id
     try:
         links = [ l.link for l in user_links_db.get(chat_id) ]
         context.user_data['links'] = links
-        for i, link in enumerate(links):
-            update.message.reply_text(f"{i+1}) {link}")
+        if links:
+            update.message.reply_text('Currently we have:')
+            for i, link in enumerate(links):
+                update.message.reply_text(f"{i+1}) {link}")
+        else:
+            update.message.reply_text('Currently we have no links from you.')
     except Exception as e:
         context.user_data['links'] = []
     return ADDING_LINKS
