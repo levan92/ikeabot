@@ -110,12 +110,15 @@ def remove_link(update, context):
             to_removes.append(selected)
             update.message.reply_text(f'Removing {selected}.')
     update.message.reply_text(f"go on.. let me know when you are /done.")
+    logger.debug(f"to_removes:{context.user_data['to_removes']}")
     return REMOVING_LINKS
 
 def end_edit_links(update, context):
     chat_id = update.message.chat.id
     links = context.user_data.get('links')
+    logger.debug(f"links:{links}")
     to_removes = context.user_data.get('to_removes', [])
+    logger.debug(f"to_removes:{context.user_data['to_removes']}")
     for select in set(to_removes):
         if select in links:
             links.remove(select)
