@@ -5,7 +5,7 @@ import validators
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 
-from utils.watcher import get_stock
+from utils.ikea_watcher import get_stock
 from utils.db_utils import UserLinksDB
 from utils.msgs import help_msg
 from utils.emojis import EMO
@@ -58,6 +58,7 @@ def start_add_links(update, context):
             update.message.reply_text('Currently we have no links from you.')
     except Exception as e:
         context.user_data['links'] = []
+    context.user_data['to_removes'] = []
     return ADDING_LINKS
 
 def add_link(update, context):
@@ -116,21 +117,21 @@ def remove_link(update, context):
 def end_edit_links(update, context):
     chat_id = update.message.chat.id
     links = context.user_data.get('links')
-    logger.debug(f"links:{links}")
     to_removes = context.user_data.get('to_removes', [])
-    logger.debug(f"to_removes:{context.user_data['to_removes']}")
     for select in set(to_removes):
         if select in links:
             links.remove(select)
+
+    user_links_db.replace(chat_id, links)
+
     if links:
         update.message.reply_text(f"Will look out for these now:")
         for i, link in enumerate(links):
             update.message.reply_text(f"{i+1}) {link}")
         logger.info(links)
-        user_links_db.replace(chat_id, links)
         update.message.reply_text(f"/stock to perform a stock take on your list {EMO['smile']}")
     else:
-        msg = "No links received! /add again?"
+        msg = "No links. /add?"
         logger.info(msg)
         update.message.reply_text(msg)
     return ConversationHandler.END
@@ -142,14 +143,20 @@ def report_stock(update, context):
     if links:
         update.message.reply_text('Hold on, checking with IKEA..')
         for i, link in enumerate(links):
-            name, success = get_stock(link)
-            if success is None:
+            res = get_stock(link)
+            if res is None:
                 msg = f'{i+1}) {name}: {EMO["warn"]} Unable to get info, sorry check yourself {link}'
-            elif success:
-                msg = f'{i+1}) {name}: {EMO["tick"]} Available! Get it here: {link}'
             else:
-                msg = f'{i+1}) {name}: {EMO["cross"]} Nuu out of stock :('
+                name, qtys, avail_delivery = res
+                msg = f'{i+1}) {name}: '
+                msg += f'{EMO["tick"]} Available for Delivery, get it here: {link}' if avail_delivery else f'{EMO["cross"]} Not Available for Delivery..'
+                msg += '\n'
+                msg += '\n'
+                msg += f'Stock levels at outlets: {", ".join([str(q) for q in qtys])}'
+
             update.message.reply_text(msg, disable_web_page_preview=True)
+        update.message.reply_text('Done!')
+
     else:
         update.message.reply_text('You have nothing on the list, please /add to it!')
 
