@@ -156,7 +156,6 @@ def report_stock(update, context):
 
             update.message.reply_text(msg, disable_web_page_preview=True)
         update.message.reply_text('Done!')
-
     else:
         update.message.reply_text('You have nothing on the list, please /add to it!')
 

@@ -1,6 +1,9 @@
 build:
   docker:
-    web: Dockerfile
+    worker: Dockerfile
 run:
-  worker: python3 bot.py
+  worker: 
+    command: 
+        - python3 bot.py
+    image: worker
 
