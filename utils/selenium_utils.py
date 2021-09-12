@@ -1,6 +1,9 @@
+import logging
 from warnings import warn
 
 from selenium.common.exceptions import WebDriverException
+
+logger = logging.getLogger(__name__)
 
 def get_chrome(webdriver, headless=True, verbose=True, window_size="1080p", user_agent=None):
     from selenium.webdriver.chrome.options import Options
@@ -16,7 +19,7 @@ def get_chrome(webdriver, headless=True, verbose=True, window_size="1080p", user
 
     driver = webdriver.Chrome(chrome_options=chrome_options)
     if verbose:
-        print(f'Driving with {"headless " if headless else ""}CHROME!')
+        logger.info(f'Driving with {"headless " if headless else ""}CHROME!')
     return driver
 
 def get_firefox(webdriver, headless=True, verbose=True, window_size="1080p", user_agent=None):
@@ -30,7 +33,7 @@ def get_firefox(webdriver, headless=True, verbose=True, window_size="1080p", use
         firefoxOptions.add_argument(f'user-agent={user_agent}')
     driver = webdriver.Firefox(firefox_options=firefoxOptions)
     if verbose:
-        print(f'Driving with {"headless " if headless else ""}FIREFOX!')
+        logger.info(f'Driving with {"headless " if headless else ""}FIREFOX!')
     return driver
 
 def get_driver(browser='chrome', headless=True, verbose=True, user_agent=None, webdriver=None):
@@ -49,5 +52,5 @@ def get_driver(browser='chrome', headless=True, verbose=True, user_agent=None, w
             warn(f'Browser exception:{e}, trying next one.')
             continue
 
-    print('No browsers found.')
+    logger.error('No browsers found.')
     return None

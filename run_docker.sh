@@ -8,4 +8,4 @@ else
 fi
 echo "Running" $docker_image
 
-docker run -it -w $WORKSPACE -v $WORKSPACE:$WORKSPACE  --network="host" $docker_image
+docker run -it -w $WORKSPACE -v $WORKSPACE:$WORKSPACE --env-file .env --network="host" $docker_image

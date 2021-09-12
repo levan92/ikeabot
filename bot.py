@@ -152,9 +152,7 @@ def report_stock(update, context):
                 msg += f'{EMO["tick"]} Available for Delivery, get it here: {link}' if avail_delivery else f'{EMO["cross"]} Not Available for Delivery..'
                 msg += '\n'
                 msg += '\n'
-                msg += f'Stock levels at outlets:'
-                for qty, update_time in qtys:
-                    msg += f'Stock levels at outlets: {", ".join([str(q) for q in qtys])}'
+                msg += f'Stock levels at outlets: {", ".join([str(q[0]) for q in qtys])}'
 
             update.message.reply_text(msg, disable_web_page_preview=True)
         update.message.reply_text('Done!')

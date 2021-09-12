@@ -36,7 +36,7 @@ def req_interceptor(request):
 def get_stock(url):
     driver = get_driver(webdriver=webdriver, browser='chrome', headless=True, verbose=True)
 
-    logger.info('Getting',url)
+    logger.info(f'Getting {url}')
     driver.request_interceptor = req_interceptor
     driver.scopes = [
         '.*api.ingka.*'
@@ -73,7 +73,6 @@ def get_stock(url):
             pass
     
     name = englishfy(driver.title).replace('- IKEA', '').strip()
-    logger.info(name, qtys, 'avail for delivery' if avail_delivery else 'not avail for delivery')
     del driver
     return name, qtys, avail_delivery
 
