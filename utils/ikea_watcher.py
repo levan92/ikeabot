@@ -7,6 +7,8 @@ from seleniumwire.utils import decode
 
 from .selenium_utils import get_driver
 
+logger = logging.getLogger(__name__)
+
 def not_swedish(char):
     try:
         char.encode(encoding='utf-8').decode('ascii')
@@ -27,22 +29,20 @@ def get_stocks(urls):
         get_stock(url)
 
 def req_interceptor(request):
-# Block PNG, JPEG and GIF images
+    # Block PNG, JPEG and GIF images
     if request.path.endswith(('.png', '.jpg', '.gif')):
         request.abort()
 
 def get_stock(url):
-    print('getting driver')
     driver = get_driver(webdriver=webdriver, browser='chrome', headless=True, verbose=True)
 
-    print('getting',url)
+    logger.info('Getting',url)
     driver.request_interceptor = req_interceptor
     driver.scopes = [
         '.*api.ingka.*'
     ]
     driver.get(url)
 
-    print('parsing reqs')
     for req in driver.requests:
         if req.response and 'api.ingka' in req.url:
             selected = req
@@ -62,7 +62,7 @@ def get_stock(url):
             qty = outlet['buyingOption']['cashCarry']['availability']['quantity'] # int
             update_ts = outlet['buyingOption']['cashCarry']['availability']['updateDateTime']
             update_time = datetime.strptime(update_ts, '%Y-%m-%dT%H:%M:%S.%fZ')
-            qtys.append(qty)
+            qtys.append((qty,update_time))
         except Exception as e:
             pass
         
@@ -73,7 +73,7 @@ def get_stock(url):
             pass
     
     name = englishfy(driver.title).replace('- IKEA', '').strip()
-    print(name, qtys, 'avail for delivery' if avail_delivery else 'not avail for delivery')
+    logger.info(name, qtys, 'avail for delivery' if avail_delivery else 'not avail for delivery')
     del driver
     return name, qtys, avail_delivery
 
